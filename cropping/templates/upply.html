@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link  href="{% static 'cropperjs/cropper.css' %}" rel="stylesheet">
+    <script src="{% static 'cropperjs/cropper.js' %}"></script>
+   
+    
+    
+    <title>Document</title>
+</head>
+<body>
+    <input
+    type="file"
+    id="folder"
+    webkitdirectory
+    directory
+    multiple
+    data-x="{{ x }}"
+    data-y="{{ y }}"
+    data-width="{{ width }}"
+    data-height="{{ height }}"
+  />
+
+    <script>
+
+        const fileInput = document.getElementById('folder');
+
+        fileInput.addEventListener('change', function () {
+          const files = fileInput.files;
+          const actionUrl = fileInput.dataset.action;
+  
+          const loadImage = (file) => {
+            const fileURL = URL.createObjectURL(file);
+            return new Promise((resolve) => {
+              const image = new Image();
+              image.src = fileURL;
+              image.onload = () => resolve(image);
+            });
+          };
+  
+          const cropImage = (image, x, y, width, height) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
+            return canvas.toDataURL('image/png');
+          };
+  
+          const saveCroppedImage = (file, croppedURL) => {
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('cropped_image', croppedURL);
+  
+            fetch(actionUrl, {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => {
+              console.log('Image saved successfully.');
+              // Handle the response as needed
+            })
+            .catch(error => {
+              console.error('Error saving image:', error);
+              // Handle the error as needed
+            });
+          };
+  
+          const x = parseInt(fileInput.dataset.x); // Get x-coordinate from data attribute
+          const y = parseInt(fileInput.dataset.y); // Get y-coordinate from data attribute
+          const width = parseInt(fileInput.dataset.width); // Get width from data attribute
+          const height = parseInt(fileInput.dataset.height); // Get height from data attribute
+  
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            loadImage(file).then((image) => {
+              const croppedURL = cropImage(image, x, y, width, height);
+              saveCroppedImage(file, croppedURL);
+            });
+          }
+        });
+    </script>
+</body>
+</html>

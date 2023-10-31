@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link  href="{% static 'cropperjs/cropper.css' %}" rel="stylesheet">
+    <script src="{% static 'cropperjs/cropper.js' %}"></script>
+
+    <link  href="{% static 'style.css' %}" rel="stylesheet">
+    <title>Document</title>
+</head>
+    
+    <body>
+        <div class="main-container">
+            <div class="img-container">
+                <img id="image" src="media/d.jfif">
+            </div>
+            <button id="btn-crop">Crop</button>
+            <button id="btn-save">Save</button>
+            <div class="cropped-container">
+                <img src="" id="output">
+            </div>
+        </div>
+        <script src="{% static 'script.js' %}"></script>
+        <form action="" method="POST" id="formi" >
+            {% csrf_token %}
+            <input type="hidden" id="x" name="X" value="f">
+            <input type="hidden" id="y" name="Y" value="f">
+            <input type="hidden" id="width" name="Width" value="f">
+            <input type="hidden" id="height" name="Height" value="f">
+        </form>
+        
+        <div>{% block content %}{% endblock content %}</div>
+    </body>
+</html>
+
+
